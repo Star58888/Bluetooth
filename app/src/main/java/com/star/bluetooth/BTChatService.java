@@ -156,64 +156,58 @@ public class BTChatService {
 
         }
 
-        public void run()
-        {
-            while ((btState != STATE_CONNECTED))
-            {
+        public void run() {
+            while ((btState != STATE_CONNECTED)) {
                 try {
                     btSocket = BTServerSocket.accept();
                 } catch (IOException e) {
-                    Log.d(TAG , "Get BT Socket fail" + e);
+                    Log.d(TAG, "Get BT Socket fail" + e);
 //                    e.printStackTrace();
                     break;
                 }
-            }
 
-            if (btSocket != null)
-            {
-                switch (btState)
-                {
-                    case STATE_WaitingConnectng:
 
-                    case STATE_CONECTING:
-                        device = btSocket.getRemoteDevice();
-                        //藍芽
-                        if (btConnectingThread != null)
-                        {
-                            btConnectingThread.cancel();
-                            btConnectingThread = null;
-                        }
+                if (btSocket != null) {
+                    switch (btState) {
+                        case STATE_WaitingConnectng:
 
-                        if (btConnectedThread != null)
-                        {
-                            btConnectedThread.cancel();
-                            btConnectedThread = null;
-                        }
-                        if (btAcceptThread != null)
-                        {
-                            btAcceptThread.cancel();
-                            btAcceptThread = null;
-                        }
-                        btConnectedThread = new ConnectedThread(btSocket);
-                        btConnectedThread.start();
+                        case STATE_CONECTING:
+                            device = btSocket.getRemoteDevice();
+                            //藍芽
+                            if (btConnectingThread != null) {
+                                btConnectingThread.cancel();
+                                btConnectingThread = null;
+                            }
 
-                        //顯示動作
-                        Message msg = btHandler.obtainMessage(Constants.MESSAGE_DEVICE_NAME);
-                        Bundle bundle = new Bundle();
-                        bundle.putString(Constants.DEVICE_NAME , device.getName());
-                        msg.setData(bundle);
-                        btHandler.sendMessage(msg);
-                        break;
+                            if (btConnectedThread != null) {
+                                btConnectedThread.cancel();
+                                btConnectedThread = null;
+                            }
+                            if (btAcceptThread != null) {
+                                btAcceptThread.cancel();
+                                btAcceptThread = null;
+                            }
+                            btConnectedThread = new ConnectedThread(btSocket);
+                            btConnectedThread.start();
 
-                    case STATE_NORMAL:
-                    case STATE_CONNECTED:
-                        try {
-                            btSocket.close();
-                        } catch (IOException e) {
-                            Log.d(TAG , "close failed" );
+                            //顯示動作
+                            Message msg = btHandler.obtainMessage(Constants.MESSAGE_DEVICE_NAME);
+                            Bundle bundle = new Bundle();
+                            bundle.putString(Constants.DEVICE_NAME, device.getName());
+                            msg.setData(bundle);
+                            btHandler.sendMessage(msg);
+                            break;
+
+                        case STATE_NORMAL:
+                        case STATE_CONNECTED:
+                            try {
+                                btSocket.close();
+                            } catch (IOException e) {
+                                Log.d(TAG, "close failed");
 //                            e.printStackTrace();
-                        }
-                        break;
+                            }
+                            break;
+                    }
                 }
             }
         }
