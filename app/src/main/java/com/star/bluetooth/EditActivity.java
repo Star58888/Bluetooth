@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.InputFilter;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -20,6 +21,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.FileReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
@@ -218,15 +220,71 @@ public class EditActivity extends Activity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
+        InputStream inputFile = null;
+        InputStreamReader fileChar;
+        StringBuilder fileBuffer = new StringBuilder();
+        char[] buffer = new char[200];
+
         if (item.getGroupId() == groupMenuID)
         {
-            switch (item.getItemId())
-            {
+            switch (item.getItemId()) {
                 case File_1:
-                    Toast.makeText(context , "Send file 1 " , Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Send file 1 ", Toast.LENGTH_SHORT).show();
+                    try {
+                        inputFile = context.getResources().openRawResource(R.raw.file_1);
+                        fileChar = new InputStreamReader(inputFile, "UTF-8");
+                        while ((fileChar.read(buffer)) != -1)
+                        {
+                            fileBuffer.append(new String(buffer));
+                        }
+                    String message = fileBuffer.toString();
+                    dataTextView.append(">>" + message + "\n\n");
+                    sendMessage(message);
+
+                    } catch (Exception e) {
+                        Log.d(TAG , "Read File 1 failed" + e);
+
+                    } finally {
+                        try {
+                            if (inputFile != null)
+
+                                inputFile.close();
+                        } catch (Exception e)
+                        {
+
+                        }
+                    }
+
+
                     break;
                 case File_2:
                     Toast.makeText(context , "Send file 2 " , Toast.LENGTH_SHORT).show();
+
+                    try {
+                        inputFile = context.getResources().openRawResource(R.raw.file_2);
+                        fileChar = new InputStreamReader(inputFile, "UTF-8");
+                        while ((fileChar.read(buffer)) != -1)
+                        {
+                            fileBuffer.append(new String(buffer));
+                        }
+                        String message = fileBuffer.toString();
+                        dataTextView.append(">>" + message + "\n\n");
+                        sendMessage(message);
+
+                    } catch (Exception e) {
+                        Log.d(TAG , "Read File 2 failed" + e);
+
+                    } finally {
+                        try {
+                            if (inputFile != null)
+
+                                inputFile.close();
+                        } catch (Exception e)
+                        {
+
+                        }
+                    }
                     break;
             }
         }
